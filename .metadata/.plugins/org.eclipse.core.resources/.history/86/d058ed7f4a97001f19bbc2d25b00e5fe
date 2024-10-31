@@ -1,0 +1,36 @@
+server:
+  port: 8761
+
+eureka:
+  client:
+    registerWithEureka: false 
+    fetchRegistry: false
+  server:
+    enableSelfPreservation: false #dev
+#		enableSelfPreservation: false #prod
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # 모든 Actuator 엔드포인트를 노출, 운영 환경에서는 필요한 엔드포인트만 노출하는 것이 좋습니다
+  endpoint:
+    health:
+      show-details: "always"  # Health 엔드포인트에서 세부 정보 표시
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: service1-route  # 라우트 ID
+          uri: lb://service1  # Eureka에 등록된 service1 서비스로 라우팅
+          predicates:
+            - Path=/service1/**  # 경로 조건, /service1/** 경로로 들어오는 요청만 라우팅
+        - id: service2-route
+          uri: lb://service2
+          predicates:
+            - Path=/service2/**
+    discovery:
+      locator:
+        enabled: true  # Eureka와의 통합을 활성화하여 동적 라우팅 사용
+        lowerCaseServiceId: true 
